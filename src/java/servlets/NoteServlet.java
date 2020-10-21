@@ -7,10 +7,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.JOptionPane;
 import models.Note;
 
 /**
@@ -26,20 +28,28 @@ public class NoteServlet extends HttpServlet {
         try {
             String path = getServletContext().getRealPath("/WEB-INF/note.txt");
             try {
-                String title;
-                String content;
-                //read-file
 
-                BufferedReader br = new BufferedReader(new FileReader(new File(path)));
-                String line = br.readLine();
-                while (line != null) {
+                try ( //read-file
+                        BufferedReader br = new BufferedReader(new FileReader(new File(path)))) {
 
-                    title = br.readLine();
-                    content = br.readLine();
+                    String line;
+
+                    String title = "";
+                    String content = "";
+                    int counter = 0;
+                    while ((line = br.readLine()) != null) {
+
+                        counter++;
+                        if (counter == 1) {
+                            title = line;
+                        } else {
+                            content = line;
+                        }
+
+                    }
 
                     Note note = new Note(title, content);
                     request.setAttribute("note", note);
-
                     br.close();
                 }
             } catch (IOException e) {
@@ -72,21 +82,21 @@ public class NoteServlet extends HttpServlet {
             try ( //Write to file
                     PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(path, false)))) {
                 String title = request.getParameter("title");
-                request.setAttribute("title", title);
-                
                 String content = request.getParameter("content");
-                request.setAttribute("content", content);
-                
+
                 if ((!"".equals(title)) || (!"".equals(content))) {
                     pw.println(title);
                     pw.println(content);
-                    
+                    Note note = new Note(title, content);
+                    request.setAttribute("note", note);
+
+                    pw.close();
                 }
             }
             getServletContext().getRequestDispatcher("/WEB-INF/viewnote.jsp").forward(request, response);
 
         } catch (IOException e) {
-            
+
         } finally {
             getServletContext().getRequestDispatcher("/WEB-INF/viewnote.jsp").forward(request, response);
         }

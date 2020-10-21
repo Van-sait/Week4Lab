@@ -15,10 +15,10 @@
         <h1>Simple Note Keeper</h1>
         <h2>Edit Note</h2>
         
-        <form action="editnote" method="post">
+        <form action="note" method="post">
             Title:<input type="text" name="title" value ="${note.title}"><br>
-            Content:<textarea name="content" value="${note.content}" cols="20" rows="5"></textarea><br>
-            <input type="submit" name="save" value="Save">
+            Content:<textarea name="content" cols="20" rows="5">${note.content}</textarea><br>
+            <input type="submit" value="Save">
         </form>
     </body>
 </html>
